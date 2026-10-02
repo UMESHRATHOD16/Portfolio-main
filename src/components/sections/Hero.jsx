@@ -33,17 +33,18 @@ export default function Hero() {
           <h1
             className="leading-none tracking-tighter select-none "
             style={{
-              fontFamily: "'Syne', sans-serif",
+              fontFamily: "'bebas-neue', sans-serif",
               fontWeight: 680,
               fontSize: 'clamp(4rem, 17vw, 18rem)',
               lineHeight: 0.88,
+              fontFamily:"'Bebas Neue', 'Bebas Neue Fallback'",
             }}
           >
             <span className="block text-slate-900 dark:text-white">
-              UMESH
+              U M E S H
             </span>
             <span className="block text-slate-900 dark:text-white">
-              RATHOD
+              R A T H O D
             </span>
             {/* <span
               className="block"
