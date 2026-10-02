@@ -35,7 +35,7 @@ export default function Navbar({ toggleTheme, theme }) {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-100 transition-all duration-500 ${
         scrolled
           ? 'bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-xl border-b border-light-border dark:border-dark-border'
           : 'bg-transparent'
