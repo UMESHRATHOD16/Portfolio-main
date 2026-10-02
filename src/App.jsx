@@ -11,6 +11,7 @@ import Experience from './components/sections/Experience'
 import GitHub from './components/sections/GitHub'
 import Blogs from './components/sections/Blogs'
 import Contact from './components/sections/Contact'
+import About from './components/sections/About'
 
 export default function App() {
   const { theme, toggleTheme } = useTheme()
@@ -28,6 +29,7 @@ export default function App() {
 
         <main>
           <Hero />
+          <About/>
           <Skills />
           <Projects />
           <Experience />
