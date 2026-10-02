@@ -5,7 +5,7 @@ export const personalInfo = {
   roles: ["Full-Stack Developer", "Software Developer", "Problem Solver", "IT Enthusiast"],
   tagline: "Building things that matter.",
   bio: {
-    p1: "Started with GTA on a friend's PC. Ended up building AI-powered web apps. Not a bad arc.",
+    p1: "Started with GTA on a friend's PC. Ended up building AI-powered web apps.",
     p2: "2nd year IT student at NIT Jalandhar. I build full-stack web apps — from React frontends to Node.js backends with real databases, auth systems, and AI integrations.",
     p3: "Currently focused on strengthening my development skills — with React at the core, FastAPI in progress, and DSA as a consistent foundation. Continuously learning, building, and improving.",
   },
