@@ -11,7 +11,7 @@ export default function About() {
     <section
       id="about"
       ref={ref}
-      className="min-h-screen flex flex-col justify-center px-6 max-w-6xl mx-auto py-32"
+      className="flex flex-col justify-center px-6 max-w-6xl mx-auto py-20"
     >
       <motion.div
         initial={{ opacity: 0, y: 40 }}

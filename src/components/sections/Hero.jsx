@@ -21,7 +21,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col justify-between px-6 pt-8 pb-8 overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-between px-6 pt-8  overflow-hidden"
     >
 
       {/* Top row */}
