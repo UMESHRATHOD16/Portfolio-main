@@ -1,7 +1,23 @@
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { personalInfo } from '../../data'
 
 export default function Hero() {
+  const circleRef = useRef(null)
+
+  useEffect(() => {
+    const circle = circleRef.current
+    if (!circle) return
+    let angle = 0
+    const animate = () => {
+      angle += 0.3
+      circle.style.transform = `rotate(${angle}deg)`
+      requestAnimationFrame(animate)
+    }
+    const id = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(id)
+  }, [])
+
   return (
     <section
       id="hero"
@@ -13,49 +29,46 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="flex items-center justify-between pt-20"
+        className="flex items-center justify-end pt-20"
       >
-        <span className="text-xs tracking-[0.3em] uppercase text-slate-400 dark:text-slate-500">
-          {personalInfo.name}
-        </span>
-        <span className="text-xs tracking-[0.3em] uppercase text-slate-400 dark:text-slate-500">
-          NIT Jalandhar · India
-        </span>
       </motion.div>
 
-      {/* CENTER — name */}
-      <div className="flex-1 flex flex-col justify-center">
+      {/* CENTER */}
+      <div className="flex-1 flex flex-col items-center justify-center text-center">
         <motion.div
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full"
         >
           <h1
-            className="leading-none tracking-tighter select-none "
+            className="leading-none select-none w-full"
             style={{
-              fontFamily: "'bebas-neue', sans-serif",
-              fontWeight: 680,
-              fontSize: 'clamp(4rem, 17vw, 18rem)',
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 'clamp(5rem, 20vw, 22rem)',
               lineHeight: 0.88,
-              fontFamily:"'Bebas Neue', 'Bebas Neue Fallback'",
+              letterSpacing: '0.05em',
             }}
           >
             <span className="block text-slate-900 dark:text-white">
-              U M E S H
+              RATHOD
             </span>
             <span className="block text-slate-900 dark:text-white">
-              R A T H O D
-            </span>
-            {/* <span
-              className="block"
-              style={{
-                WebkitTextStroke: '2px #8b5cf6',
-                color: 'transparent',
-              }}
-            >
               UMESH
-            </span> */}
+            </span>
+
           </h1>
+
+          {/* Below name */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.7 }}
+            className="text-xs tracking-[0.4em] uppercase text-slate-400 dark:text-slate-500 mt-6"
+          >
+            Full-Stack Developer · Builder · IT Student
+          </motion.p>
+
         </motion.div>
       </div>
 
@@ -66,14 +79,28 @@ export default function Hero() {
         transition={{ duration: 0.8, delay: 0.9 }}
         className="flex items-end justify-between pb-4"
       >
-        <span className="text-xs tracking-[0.3em] uppercase text-slate-400 dark:text-slate-500">
-          Developer · Student · Builder
-        </span>
 
-        <div className="flex flex-col items-end gap-1">
-          <div className="w-px h-10 bg-gradient-to-b from-accent/60 to-transparent mx-auto" />
-          <span className="text-xs tracking-widest text-slate-400 uppercase">scroll</span>
+        {/* Circular rotating badge */}
+        <div className="relative w-20 h-20 flex items-center justify-center">
+          <svg
+            ref={circleRef}
+            viewBox="0 0 100 100"
+            className="absolute inset-0 w-full h-full"
+          >
+            <path
+              id="circlePath"
+              d="M 50,50 m -30,0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0"
+              fill="none"
+            />
+            <text className="text-[9px]" fill="#8b5cf6" fontSize="9" letterSpacing="3">
+              <textPath href="#circlePath">
+                AVAILABLE FOR INTERNSHIPS · OPEN TO WORK ·
+              </textPath>
+            </text>
+          </svg>
+          <span className="text-accent text-xs font-bold">✦</span>
         </div>
+
       </motion.div>
 
     </section>
