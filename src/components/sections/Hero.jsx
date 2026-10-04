@@ -77,7 +77,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.9 }}
-        className="flex items-end justify-between pb-4"
+        className="flex items-end justify-end pb-20"
       >
 
         {/* Circular rotating badge */}
