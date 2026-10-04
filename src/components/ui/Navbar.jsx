@@ -1,167 +1,169 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { personalInfo } from '../../data'
-import { Moon, Sun, FileText } from 'lucide-react'
 
-const links = ['Hero', 'About', 'Skills', 'Projects', 'Experience', 'GitHub', 'Blogs', 'Contact']
+const links = [
+  { name: 'Hero', href: '#hero' },
+  { name: 'About', href: '#about' },
+  { name: 'Skills', href: '#skills' },
+  { name: 'Projects', href: '#projects' },
+  { name: 'Experience', href: '#experience' },
+  { name: 'GitHub', href: '#github' },
+  { name: 'Blogs', href: '#blogs' },
+  { name: 'Contact', href: '#contact' },
+]
 
 export default function Navbar({ toggleTheme, theme }) {
-  const [scrolled, setScrolled] = useState(false)
-  const [active, setActive] = useState('hero')
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 })
-  const navRef = useRef(null)
-  const ulRef = useRef(null)
-  const linkRefs = useRef({})
+  const [open, setOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState('hero')
+  const menuRef = useRef(null)
 
+  // Close on outside click
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  // Update pill position
-  useEffect(() => {
-    const updatePill = () => {
-      const activeEl = linkRefs.current[active]
-      if (!activeEl || !ulRef.current) return
-      const ulRect = ulRef.current.getBoundingClientRect()
-      const elRect = activeEl.getBoundingClientRect()
-      setPillStyle({
-        left: elRect.left - ulRect.left,
-        width: elRect.width,
-        opacity: 1,
-      })
-    }
-
-    const timeout = setTimeout(updatePill, 50)
-    return () => clearTimeout(timeout)
-  }, [active])
-
-  // Intersection observer
+  // Track active section
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id)
+          if (entry.isIntersecting) setActiveSection(entry.target.id)
         })
       },
       { threshold: 0.4 }
     )
-    links.forEach((link) => {
-      const el = document.getElementById(link.toLowerCase())
+    links.forEach(({ name }) => {
+      const el = document.getElementById(name.toLowerCase())
       if (el) observer.observe(el)
     })
     return () => observer.disconnect()
   }, [])
 
   return (
-    <header className="fixed top-4 left-0 right-0 z-[100] flex justify-center px-6">
-      <nav
-        ref={navRef}
-        className={`w-full max-w-5xl flex items-center justify-between px-5 h-14 rounded-2xl transition-all duration-500 ${
-          scrolled
-            ? 'bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-xl border border-light-border dark:border-dark-border shadow-lg shadow-black/10'
-            : 'bg-light-bg/40 dark:bg-dark-bg/40 backdrop-blur-md border border-light-border/50 dark:border-dark-border/50'
-        }`}
-      >
-        {/* Logo */}
-        <a href="#hero" className="flex items-center gap-2.5 flex-shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-xs font-bold tracking-wide">
-            RU
-          </div>
-          <span className="font-semibold text-sm hidden sm:block dark:text-slate-200 text-slate-800">
-            Rathod Umesh
-          </span>
-        </a>
+    <>
+      {/* Top left — square menu button + dropdown */}
+      <div ref={menuRef} className="fixed top-6 left-6 z-[200]">
 
-        {/* Links with sliding pill */}
-        <ul
-          ref={ulRef}
-          className="hidden md:flex items-center gap-0.5 relative h-8"
+        {/* Square button */}
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          onClick={() => setOpen(!open)}
+          className="w-9 h-9 flex items-center justify-center transition-all duration-300"
+          style={{
+            background: open ? '#8b5cf6' : 'rgba(139,92,246,0.08)',
+            border: '1px solid rgba(139,92,246,0.35)',
+            borderRadius: '6px',
+          }}
         >
-          {/* Sliding pill */}
-          <div
-            className="absolute top-0 bottom-0 rounded-lg pointer-events-none transition-all duration-300 ease-out"
-            style={{
-              left: pillStyle.left,
-              width: pillStyle.width,
-              opacity: pillStyle.opacity,
-              background: 'linear-gradient(135deg, rgba(139,92,246,0.3), rgba(139,92,246,0.15))',
-              boxShadow: '0 0 16px rgba(139,92,246,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
-              border: '1px solid rgba(139,92,246,0.4)',
-              backdropFilter: 'blur(8px)',
-            }}
-          />
-
-          {links.map((link) => (
-            <li key={link}>
-              <a
-                ref={(el) => (linkRefs.current[link.toLowerCase()] = el)}
-                href={`#${link.toLowerCase()}`}
-                onClick={() => setActive(link.toLowerCase())}
-                className={`relative z-10 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors duration-200 tracking-wide block whitespace-nowrap ${
-                  active === link.toLowerCase()
-                    ? 'text-accent'
-                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                }`}
-              >
-                {link}
-              </a>
-            </li>
-          ))}
-        </ul>
-
-        {/* Right */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <button
-            onClick={toggleTheme}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-accent hover:bg-accent/10 transition-all duration-200"
+          <motion.div
+            animate={{ rotate: open ? 45 : 0 }}
+            transition={{ duration: 0.3 }}
           >
-            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-          </button>
+            {open ? (
+              <span className="text-white text-lg font-light leading-none">×</span>
+            ) : (
+              <div
+                className="w-3.5 h-3.5 rounded-sm border transition-all duration-300"
+                style={{ borderColor: 'rgba(139,92,246,0.8)' }}
+              />
+            )}
+          </motion.div>
+        </motion.button>
 
-          <a
-            href={personalInfo.contact.resume}
-            target="_blank"
-            rel="noreferrer"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-accent/30 text-accent text-xs font-medium hover:bg-accent/10 transition-all duration-200"
-          >
-            <FileText size={12} />
-            Resume
-          </a>
-
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden w-8 h-8 rounded-lg flex flex-col items-center justify-center gap-1.5 hover:bg-light-surface dark:hover:bg-dark-surface transition-all"
-          >
-            <span className={`block w-4 h-0.5 bg-current transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-4 h-0.5 bg-current transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-4 h-0.5 bg-current transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-          </button>
-        </div>
-
-      </nav>
-
-      {/* Mobile menu */}
-      <div className={`md:hidden absolute top-16 left-6 right-6 transition-all duration-300 overflow-hidden rounded-2xl ${menuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <div className="bg-light-bg/95 dark:bg-dark-bg/95 backdrop-blur-xl border border-light-border dark:border-dark-border p-3 space-y-1">
-          {links.map((link) => (
-            <a
-              key={link}
-              href={`#${link.toLowerCase()}`}
-              onClick={() => setMenuOpen(false)}
-              className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                active === link.toLowerCase()
-                  ? 'text-accent bg-accent/10'
-                  : 'text-slate-500 dark:text-slate-400'
-              }`}
+        {/* Dropdown */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="absolute top-12 left-0 w-52 rounded-xl overflow-hidden"
+              style={{
+                background: 'rgba(13,15,26,0.95)',
+                border: '1px solid rgba(139,92,246,0.2)',
+                backdropFilter: 'blur(20px)',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.1)',
+              }}
             >
-              {link}
-            </a>
-          ))}
-        </div>
+              <div className="py-2">
+                {links.map(({ name, href }, i) => (
+                  <motion.a
+                    key={name}
+                    href={href}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2, delay: i * 0.03 }}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center justify-between px-4 py-2.5 group transition-all duration-200 hover:bg-accent/10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-[10px] font-mono text-accent/50 w-4">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span
+                        className={`text-sm font-medium transition-colors duration-200 ${
+                          activeSection === name.toLowerCase()
+                            ? 'text-accent'
+                            : 'text-white/60 group-hover:text-white'
+                        }`}
+                      >
+                        {name}
+                      </span>
+                    </div>
+                    {activeSection === name.toLowerCase() && (
+                      <motion.div
+                        layoutId="activeIndicator"
+                        className="w-1 h-1 rounded-full bg-accent"
+                      />
+                    )}
+                  </motion.a>
+                ))}
+              </div>
+
+              {/* Bottom divider + email */}
+              <div
+                className="px-4 py-3 border-t"
+                style={{ borderColor: 'rgba(139,92,246,0.1)' }}
+              >
+                <p className="text-[10px] text-white/25 tracking-widest uppercase mb-0.5">
+                  Contact
+                </p>
+                <a
+                  href={`mailto:${personalInfo.contact.email}`}
+                  className="text-[11px] text-white/40 hover:text-accent transition-colors truncate block"
+                >
+                  {personalInfo.contact.email}
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-    </header>
+      {/* Top right — theme toggle */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        onClick={toggleTheme}
+        className="fixed top-6 right-6 z-200 w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-accent transition-colors"
+        style={{
+          background: 'rgba(139,92,246,0.05)',
+          border: '1px solid rgba(139,92,246,0.2)',
+        }}
+      >
+        {theme === 'dark' ? '☀' : '☾'}
+      </motion.button>
+    </>
   )
 }
