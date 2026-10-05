@@ -20,7 +20,7 @@ export default function About() {
         className="mb-16"
       >
         <span className="text-xs tracking-[0.3em] uppercase text-accent font-medium">
-          01 — About
+          About Me
         </span>
       </motion.div>
 
