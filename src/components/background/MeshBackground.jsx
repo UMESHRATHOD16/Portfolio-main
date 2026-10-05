@@ -6,72 +6,229 @@ export default function MeshBackground() {
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
+
     let animationId
-    const mouse = { x: -1000, y: -1000 }
-    const DOT_SPACING = 28
+    let dots = []
+
+    let width = 0
+    let height = 0
+
+    const mouse = {
+      x: -1000,
+      y: -1000,
+      active: false,
+    }
+
+    const DOT_SPACING = 30
     const DOT_RADIUS = 1
-    const INFLUENCE_RADIUS = 120
+    const INFLUENCE_RADIUS = 170
 
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      width = window.innerWidth
+      height = window.innerHeight
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+      dots = []
+
+      const cols = Math.ceil(width / DOT_SPACING) + 1
+      const rows = Math.ceil(height / DOT_SPACING) + 1
+
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          dots.push({
+            baseX: i * DOT_SPACING,
+            baseY: j * DOT_SPACING,
+
+            x: i * DOT_SPACING,
+            y: j * DOT_SPACING,
+
+            vx: 0,
+            vy: 0,
+
+            phase: Math.random() * Math.PI * 2,
+
+            hue: Math.random() * 360,
+          })
+        }
+      }
     }
+
     resize()
+
     window.addEventListener('resize', resize)
 
     const handleMouseMove = (e) => {
       mouse.x = e.clientX
       mouse.y = e.clientY
+      mouse.active = true
     }
+
+    const handleMouseLeave = () => {
+      mouse.active = false
+    }
+
     window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mouseleave', handleMouseLeave)
 
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const draw = (time) => {
+      ctx.clearRect(0, 0, width, height)
 
-      const cols = Math.ceil(canvas.width / DOT_SPACING) + 1
-      const rows = Math.ceil(canvas.height / DOT_SPACING) + 1
+      const seconds = time * 0.001
 
-      for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-          const x = i * DOT_SPACING
-          const y = j * DOT_SPACING
+      dots.forEach((dot) => {
+        let targetX = dot.baseX
+        let targetY = dot.baseY
 
-          const dx = mouse.x - x
-          const dy = mouse.y - y
-          const dist = Math.sqrt(dx * dx + dy * dy)
+        const dx = mouse.x - dot.x
+        const dy = mouse.y - dot.y
 
-          let radius = DOT_RADIUS
-          let opacity = 0.18
+        const distance = Math.sqrt(
+          dx * dx + dy * dy
+        )
 
-          if (dist < INFLUENCE_RADIUS) {
-            const influence = 1 - dist / INFLUENCE_RADIUS
-            radius = DOT_RADIUS + influence * 2.5
-            opacity = 0.18 + influence * 0.7
+        let influence = 0
 
-            // Crimson glow near cursor
-            const r = Math.floor(244 * influence + 39 * (1 - influence))
-            const g = Math.floor(63 * influence + 39 * (1 - influence))
-            const b = Math.floor(94 * influence + 39 * (1 - influence))
-            ctx.fillStyle = `rgba(${r},${g},${b},${opacity})`
-          } else {
-            ctx.fillStyle = `rgba(255,255,255,${opacity})`
-          }
+        if (
+          mouse.active &&
+          distance < INFLUENCE_RADIUS
+        ) {
+          influence =
+            1 - distance / INFLUENCE_RADIUS
 
-          ctx.beginPath()
-          ctx.arc(x, y, radius, 0, Math.PI * 2)
-          ctx.fill()
+          // Smooth influence
+          influence =
+            influence * influence
         }
-      }
 
-      animationId = requestAnimationFrame(draw)
+        // --------------------------------
+        // IDLE JUMP / BOUNCE
+        // --------------------------------
+
+        if (influence > 0) {
+          const jumpStrength =
+            influence * 1.8
+
+          const jumpX =
+            Math.sin(
+              seconds * 5 +
+              dot.phase
+            ) * jumpStrength
+
+          const jumpY =
+            Math.cos(
+              seconds * 4.2 +
+              dot.phase * 1.7
+            ) * jumpStrength
+
+          targetX += jumpX
+          targetY += jumpY
+        }
+
+        // --------------------------------
+        // CURSOR PUSH
+        // --------------------------------
+
+        if (influence > 0) {
+          const angle =
+            Math.atan2(dy, dx)
+
+          const push =
+            influence * 28
+
+          targetX -=
+            Math.cos(angle) * push
+
+          targetY -=
+            Math.sin(angle) * push
+        }
+
+        // --------------------------------
+        // SPRING PHYSICS
+        // --------------------------------
+
+        const spring = 0.08
+        const friction = 0.82
+
+        dot.vx +=
+          (targetX - dot.x) * spring
+
+        dot.vy +=
+          (targetY - dot.y) * spring
+
+        dot.vx *= friction
+        dot.vy *= friction
+
+        dot.x += dot.vx
+        dot.y += dot.vy
+
+        // --------------------------------
+        // RAINBOW
+        // --------------------------------
+
+        const hue =
+          (dot.hue + time * 0.03) % 360
+
+        const radius =
+          DOT_RADIUS +
+          influence * 2.4
+
+        const alpha =
+          0.12 +
+          influence * 0.75
+
+        ctx.beginPath()
+
+        ctx.arc(
+          dot.x,
+          dot.y,
+          radius,
+          0,
+          Math.PI * 2
+        )
+
+        ctx.fillStyle = `hsla(
+          ${hue},
+          85%,
+          65%,
+          ${alpha}
+        )`
+
+        ctx.fill()
+      })
+
+      animationId =
+        requestAnimationFrame(draw)
     }
 
-    draw()
+    animationId =
+      requestAnimationFrame(draw)
 
     return () => {
       cancelAnimationFrame(animationId)
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', handleMouseMove)
+
+      window.removeEventListener(
+        'resize',
+        resize
+      )
+
+      window.removeEventListener(
+        'mousemove',
+        handleMouseMove
+      )
+
+      window.removeEventListener(
+        'mouseleave',
+        handleMouseLeave
+      )
     }
   }, [])
 
