@@ -72,36 +72,52 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Bottom row */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.9 }}
-        className="flex items-end justify-end pb-20"
+
+{/* Bottom row */}
+
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, delay: 0.9 }}
+  className="flex items-end justify-end"
+>
+
+  <div className="relative w-32 h-32 flex items-center justify-center -translate-y-18">
+    <svg
+      ref={circleRef}
+      viewBox="0 0 100 100"
+      className="absolute inset-0 w-full h-full"
+    >
+      <path
+        id="circlePath"
+        d="M 50,50 m -38,0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
+        fill="none"
+      />
+
+      <text
+        fill="#F43F5E"
+        fontSize="6.5"
+        fontWeight="500"
+        letterSpacing="2.8"
       >
+        <textPath href="#circlePath">
+          AVAILABLE FOR INTERNSHIPS · OPEN TO WORK ·
+        </textPath>
+      </text>
+    </svg>
 
-        {/* Circular rotating badge */}
-        <div className="relative w-20 h-20 flex items-center justify-center">
-          <svg
-            ref={circleRef}
-            viewBox="0 0 100 100"
-            className="absolute inset-0 w-full h-full"
-          >
-            <path
-              id="circlePath"
-              d="M 50,50 m -30,0 a 30,30 0 1,1 60,0 a 30,30 0 1,1 -60,0"
-              fill="none"
-            />
-            <text className="text-[9px]" fill="#8b5cf6" fontSize="9" letterSpacing="3">
-              <textPath href="#circlePath">
-                AVAILABLE FOR INTERNSHIPS · OPEN TO WORK ·
-              </textPath>
-            </text>
-          </svg>
-          <span className="text-accent text-xs font-bold">✦</span>
-        </div>
+    <span
+      className="text-sm font-bold"
+      style={{
+        color: '#F43F5E',
+        textShadow: '0 0 12px rgba(244, 63, 94, 0.45)',
+      }}
+    >
+      ✦
+    </span>
+  </div>
+</motion.div>
 
-      </motion.div>
 
     </section>
   )
