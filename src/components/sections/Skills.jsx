@@ -39,6 +39,11 @@ function TechIcon({ tech, delay, inView }) {
   const [hovered, setHovered] = useState(false)
   const Icon = tech.icon
 
+  // Random float values per icon
+  const floatY = Math.random() * 10 + 6
+  const floatDuration = Math.random() * 2 + 3
+  const floatDelay = Math.random() * 2
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.5, y: 30 }}
@@ -49,39 +54,49 @@ function TechIcon({ tech, delay, inView }) {
       className="flex flex-col items-center gap-3 cursor-default relative"
       style={{ width: '90px' }}
     >
+      {/* Floating wrapper */}
       <motion.div
-        animate={hovered
-          ? { y: -8, scale: 1.15 }
-          : { y: 0, scale: 1 }
-        }
-        transition={{ duration: 0.25, ease: 'easeOut' }}
-        className="w-16 h-16 rounded-2xl flex items-center justify-center"
-        style={{
-          background: hovered
-            ? `${tech.color}20`
-            : 'rgba(255,255,255,0.04)',
-          border: `1px solid ${hovered ? tech.color + '60' : 'rgba(255,255,255,0.08)'}`,
-          boxShadow: hovered
-            ? `0 0 30px ${tech.color}40, 0 8px 30px rgba(0,0,0,0.4)`
-            : 'none',
-          transition: 'background 0.25s, border 0.25s, box-shadow 0.25s',
+        animate={inView ? {
+          y: [-floatY / 2, floatY / 2, -floatY / 2],
+        } : {}}
+        transition={{
+          duration: floatDuration,
+          delay: floatDelay,
+          repeat: Infinity,
+          ease: 'easeInOut',
         }}
+        className="flex flex-col items-center gap-3"
       >
-        <Icon
-          size={30}
-          color={hovered ? tech.color : 'rgba(255,255,255,0.55)'}
-          style={{ transition: 'color 0.25s' }}
-        />
+        <motion.div
+          animate={hovered ? { y: -8, scale: 1.15 } : { y: 0, scale: 1 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="w-16 h-16 rounded-2xl flex items-center justify-center"
+          style={{
+            background: hovered
+              ? `${tech.color}20`
+              : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${hovered ? tech.color + '60' : 'rgba(255,255,255,0.08)'}`,
+            boxShadow: hovered
+              ? `0 0 30px ${tech.color}40, 0 8px 30px rgba(0,0,0,0.4)`
+              : 'none',
+            transition: 'background 0.25s, border 0.25s, box-shadow 0.25s',
+          }}
+        >
+          <Icon
+            size={30}
+            color={hovered ? tech.color : 'rgba(255,255,255,0.55)'}
+            style={{ transition: 'color 0.25s' }}
+          />
+        </motion.div>
+
+        <span
+          className="text-xs font-medium text-center transition-colors duration-200"
+          style={{ color: hovered ? tech.color : 'rgba(255,255,255,0.4)' }}
+        >
+          {tech.name}
+        </span>
       </motion.div>
 
-      <span
-        className="text-xs font-medium text-center transition-colors duration-200"
-        style={{ color: hovered ? tech.color : 'rgba(255,255,255,0.4)' }}
-      >
-        {tech.name}
-      </span>
-
-      {/* Tooltip glow on hover */}
       {hovered && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
