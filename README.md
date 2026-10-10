@@ -29,8 +29,8 @@ Personal developer portfolio showcasing my projects, technical skills, experienc
 ## Run Locally
 
 ```bash
-git clone <your-repository-url>
-cd <your-project-folder>
+git clone <https://github.com/UMESHRATHOD16/Portfolio-main.git>
+cd <portfolio-main or the name you saved>
 npm install
 npm run dev
 ```
