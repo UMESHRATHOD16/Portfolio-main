@@ -27,7 +27,7 @@ const socials = [
 ]
 
 const resumeUrl =
-  'https://drive.google.com/file/d/1C6w2WM7vT1C0XODiqwTRr3JqqwC0PXTQ/view?usp=drive_link'
+  'https://drive.google.com/file/d/1oYCvltsqM9IAXjTh0Hmg-oOd4d9JCAT-/view?usp=sharing'
 
 export default function About() {
   const ref = useRef(null)
