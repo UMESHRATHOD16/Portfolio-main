@@ -148,7 +148,7 @@ export default function Contact() {
 
               {/* Resume: opens Google Drive */}
               <motion.a
-                href="https://drive.google.com/file/d/1H_TmCLIgexfeNlC69a4NLTsvaXuw56mT/view?usp=drive_link"
+                href="https://drive.google.com/file/d/1C6w2WM7vT1C0XODiqwTRr3JqqwC0PXTQ/view?usp=drive_link"
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={reduceMotion ? {} : { y: -3 }}
